@@ -4,13 +4,14 @@ import { theme } from '../../styles/theme';
 
 type ContainerProps = {
   $variant: 'black' | 'dark';
+  width?: boolean;
 };
 
 export const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  width: 100%;
+  width: ${(props) => props.width && '90%'};
 
   label {
     color: ${theme.colors.white};
