@@ -67,7 +67,7 @@ export function App() {
         <Logo />
 
         <Spacer>
-          {/* <CreateTransactionDialog /> */}
+          <CreateTransactionDialog />
           <CreateCategoryDialog />
         </Spacer>
       </Header>

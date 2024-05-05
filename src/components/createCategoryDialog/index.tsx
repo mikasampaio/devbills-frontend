@@ -47,9 +47,7 @@ export default function CreateCategoryDialog() {
             >
               Cancelar
             </Button>
-            <Button variant="outline" onClick={onSubmit}>
-              Cadastrar
-            </Button>
+            <Button onClick={onSubmit}>Cadastrar</Button>
           </footer>
         </form>
       </Container>
