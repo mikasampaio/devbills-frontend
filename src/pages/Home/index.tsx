@@ -7,8 +7,10 @@ import { PiCurrencyCircleDollar } from 'react-icons/pi';
 import Button from '../../components/button';
 import { ButtonIcon } from '../../components/button-icon';
 import { CardBalance } from '../../components/cardBalance';
+import { CategoriesPieChart } from '../../components/categoryPieChart';
 import CreateCategoryDialog from '../../components/createCategoryDialog';
 import CreateTransactionDialog from '../../components/createTransactionDialog';
+import { FinancesBarChart } from '../../components/evolutionFinancialBarChart';
 import { Input } from '../../components/input';
 import Title from '../../components/title';
 import Transaction from '../../components/transaction';
@@ -117,7 +119,9 @@ export function App() {
                 subtitle="Receitas e despesas no período"
               />
             </Header>
-            <ChartContent></ChartContent>
+            <ChartContent>
+              <CategoriesPieChart />
+            </ChartContent>
           </ChartContainer>
 
           <ChartContainer>
@@ -141,7 +145,9 @@ export function App() {
                 </ButtonIcon>
               </ChartFilter>
             </Header>
-            <ChartContent></ChartContent>
+            <ChartContent>
+              <FinancesBarChart />
+            </ChartContent>
           </ChartContainer>
         </Section>
         <Aside>

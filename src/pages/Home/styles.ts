@@ -63,7 +63,7 @@ export const ChartContainer = styled.div`
 `;
 
 export const ChartContent = styled.div`
-  height: 14.5rem;
+  height: 16rem;
 `;
 
 export const ChartFilter = styled.div`
