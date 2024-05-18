@@ -4,7 +4,6 @@ import { BsArrowDownLeftCircle } from 'react-icons/bs';
 import { IoIosSearch } from 'react-icons/io';
 import { PiCurrencyCircleDollar } from 'react-icons/pi';
 
-import Button from '../../components/button';
 import { ButtonIcon } from '../../components/button-icon';
 import { CardBalance } from '../../components/cardBalance';
 import { CategoriesPieChart } from '../../components/categoryPieChart';
