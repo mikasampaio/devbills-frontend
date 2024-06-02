@@ -56,6 +56,13 @@ export const InputGroup = styled.div`
       border-color: ${theme.colors.primary};
     }
   }
+
+  span {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    color: #f87171;
+  }
 `;
 
 export const CurrencyInput = styled(InputNumberFormat)`
@@ -101,5 +108,12 @@ export const RadioGroup = styled.div`
     display: flex;
     align-items: center;
     gap: 0.625rem;
+  }
+
+  span {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    color: #f87171;
   }
 `;

@@ -29,7 +29,7 @@ export interface CreateTransaction {
   amount: number;
   date: string;
   categoryId: string;
-  type: string;
+  type: 'income' | 'expense';
 }
 
 export class TransactionService {

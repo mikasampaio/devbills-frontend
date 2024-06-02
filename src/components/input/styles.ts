@@ -38,4 +38,9 @@ export const Container = styled.div<ContainerProps>`
       color: ${theme.colors.neutral};
     }
   }
+
+  span {
+    color: #f87171;
+    font-size: 0.75rem;
+  }
 `;
