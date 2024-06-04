@@ -7,11 +7,11 @@ type InputProps = ComponentProps<'input'> & {
   name: string;
   label?: string;
   variant?: 'black' | 'dark';
-  width?: boolean;
+  width?: string;
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function (
-  { name, label, variant = 'dark', width = false, ...props },
+  { name, label, variant = 'dark', width, ...props },
   ref,
 ) {
   const {

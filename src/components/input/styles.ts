@@ -11,7 +11,7 @@ export const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  width: ${(props) => props.width && '90%'};
+  width: ${(props) => (props.width ? '90%' : 'auto')};
 
   label {
     color: ${theme.colors.white};

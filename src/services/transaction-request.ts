@@ -3,8 +3,8 @@ import api from './api';
 interface GetParams {
   title?: string;
   categoryId?: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string | Date;
   year?: number;
 }
 
@@ -14,7 +14,7 @@ export interface TransactionRaw {
   amount: number;
   date: string;
   category: Category;
-  type: string;
+  type: 'income' | 'expense';
 }
 [];
 
@@ -32,9 +32,38 @@ export interface CreateTransaction {
   type: 'income' | 'expense';
 }
 
+export interface Dashboard {
+  balance: Balance;
+  expenses: Expense[];
+}
+
+export interface Balance {
+  _id: string;
+  incomes: number;
+  expenses: number;
+  balance: number;
+}
+
+export interface Expense {
+  _id: string;
+  title: string;
+  color: string;
+  amount: number;
+}
+
+export interface FinancialEvolution {
+  _id: number[];
+  incomes: number;
+  expenses: number;
+  balance: number;
+}
+[];
+
 export class TransactionService {
-  static async get(params?: GetParams): Promise<TransactionRaw> {
-    const response = await api.get('/transactions', { params });
+  static async get(params?: GetParams): Promise<TransactionRaw[]> {
+    const response = await api.get<TransactionRaw[]>('/transactions', {
+      params,
+    });
 
     return response.data;
   }
@@ -46,13 +75,20 @@ export class TransactionService {
   }
 
   static async listDashboard(params?: GetParams) {
-    const response = await api.get('/transactions/dashboard', { params });
+    const response = await api.get<Dashboard>('/transactions/dashboard', {
+      params,
+    });
 
     return response.data;
   }
 
-  static async listFinancialEvolution(params?: GetParams) {
-    const response = await api.get('/transactions/financial', { params });
+  static async listFinancialEvolution(
+    params?: GetParams,
+  ): Promise<FinancialEvolution[]> {
+    const response = await api.get<FinancialEvolution[]>(
+      '/transactions/financial',
+      { params },
+    );
 
     return response.data;
   }

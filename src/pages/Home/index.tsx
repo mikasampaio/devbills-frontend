@@ -1,8 +1,12 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { InputMask } from '@react-input/mask';
+import dayjs from 'dayjs';
+import { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BsArrowUpRightCircle } from 'react-icons/bs';
 import { BsArrowDownLeftCircle } from 'react-icons/bs';
 import { IoIosSearch } from 'react-icons/io';
+import { IoIosClose } from 'react-icons/io';
 import { PiCurrencyCircleDollar } from 'react-icons/pi';
 
 import { ButtonIcon } from '../../components/button-icon';
@@ -14,10 +18,17 @@ import { FinancesBarChart } from '../../components/evolutionFinancialBarChart';
 import { Input } from '../../components/input';
 import Title from '../../components/title';
 import Transaction from '../../components/transaction';
+import { useTransaction } from '../../hooks/transaction-context';
 import Logo from '../../images/logo';
+import {
+  TransactionParams,
+  transactionsParams,
+} from '../../schemas/TransactionSchema';
+import { Category } from '../../services/category-requests';
 import { theme } from '../../styles/theme';
 import {
   Aside,
+  CategoryBadge,
   ChartContainer,
   ChartContent,
   ChartFilter,
@@ -29,6 +40,7 @@ import {
   Section,
   Spacer,
 } from './styles';
+
 interface Item {
   title: string;
   value: number;
@@ -38,19 +50,81 @@ interface Item {
 [];
 
 export function App() {
-  const methods = useForm();
+  const methods = useForm<TransactionParams>({
+    resolver: zodResolver(transactionsParams),
+    defaultValues: {
+      categoryId: undefined,
+      title: undefined,
+    },
+  });
+  const { setValue, watch, handleSubmit } = methods;
+
+  const {
+    transactions,
+    getTransaction,
+    dashboard,
+    getDashboard,
+    financialEvolution,
+    getFinancialEvolution,
+  } = useTransaction();
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
+
+  useEffect(() => {
+    getDashboard({ startDate: watch('startDate'), endDate: watch('endDate') });
+    getTransaction(watch());
+    getFinancialEvolution({ year: dayjs().year() });
+  }, [getTransaction, getFinancialEvolution]);
+
+  console.log(financialEvolution);
+
+  const handleSelectCategory = useCallback(
+    async ({ _id, title, color }: Category) => {
+      setSelectedCategory({
+        _id,
+        title,
+        color,
+      });
+
+      setValue('categoryId', _id);
+
+      await getTransaction(watch());
+    },
+    [setValue, getTransaction],
+  );
+
+  const handleClearCategory = useCallback(async () => {
+    setSelectedCategory(null);
+    setValue('categoryId', undefined);
+
+    await getTransaction(watch());
+  }, [setValue]);
+
+  useEffect(() => {
+    setSelectedCategory(null);
+    setValue('categoryId', undefined);
+  }, [setValue]);
+
+  const onSubmit = useCallback(
+    async (data: TransactionParams) => {
+      await getTransaction(data);
+    },
+    [getTransaction],
+  );
 
   const items: Item[] = [
     {
       title: 'Saldo',
-      value: 10000,
+      value: dashboard?.balance?.balance || 0,
       icon: (
         <PiCurrencyCircleDollar fontSize="2.1rem" color={theme.colors.info} />
       ),
+      variant: 'balance',
     },
     {
       title: 'Receitas',
-      value: 100000,
+      value: dashboard?.balance?.incomes || 0,
       icon: (
         <BsArrowUpRightCircle fontSize="1.8rem" color={theme.colors.primary} />
       ),
@@ -58,13 +132,14 @@ export function App() {
     },
     {
       title: 'Despesas',
-      value: 100000,
+      value: dashboard?.balance?.expenses * -1 || 0,
       icon: (
         <BsArrowDownLeftCircle fontSize="1.8rem" color={theme.colors.error} />
       ),
       variant: 'expense',
     },
   ];
+
   return (
     <>
       <FormProvider {...methods}>
@@ -84,7 +159,7 @@ export function App() {
 
               <InputGroup>
                 <InputMask
-                  name="initalDate"
+                  name="startDate"
                   label="Início"
                   component={Input}
                   mask="dd/mm/aaaa"
@@ -92,7 +167,7 @@ export function App() {
                   placeholder="dd/mm/aaaa"
                 />
                 <InputMask
-                  name="finalDate"
+                  name="endDate"
                   label="Fim"
                   component={Input}
                   mask="dd/mm/aaaa"
@@ -100,7 +175,7 @@ export function App() {
                   placeholder="dd/mm/aaaa"
                 />
 
-                <ButtonIcon>
+                <ButtonIcon onClick={handleSubmit(onSubmit)}>
                   <IoIosSearch fontSize="1.25rem" />
                 </ButtonIcon>
               </InputGroup>
@@ -123,9 +198,26 @@ export function App() {
                   title="Gráfico"
                   subtitle="Receitas e despesas no período"
                 />
+
+                {selectedCategory && (
+                  <CategoryBadge
+                    $color={selectedCategory.color}
+                    onClick={handleClearCategory}
+                  >
+                    <IoIosClose
+                      fontSize="1.25rem"
+                      color={selectedCategory.color}
+                    />
+
+                    {selectedCategory.title.toUpperCase()}
+                  </CategoryBadge>
+                )}
               </Header>
               <ChartContent>
-                <CategoriesPieChart />
+                <CategoriesPieChart
+                  expenses={dashboard.expenses}
+                  onClick={handleSelectCategory}
+                />
               </ChartContent>
             </ChartContainer>
 
@@ -141,18 +233,18 @@ export function App() {
                     name="year"
                     label="Ano"
                     component={Input}
-                    mask="dd/mm/aaaa"
-                    replacement={{ d: /\d/, m: /\d/, a: /\d/ }}
-                    placeholder="dd/mm/aaaa"
+                    mask="aaaa"
+                    replacement={{ a: /\d/ }}
+                    placeholder="aaaa"
                     variant="black"
                   />
-                  <ButtonIcon>
+                  <ButtonIcon onClick={handleSubmit(onSubmit)}>
                     <IoIosSearch fontSize="1.25rem" />
                   </ButtonIcon>
                 </ChartFilter>
               </Header>
               <ChartContent>
-                <FinancesBarChart />
+                <FinancesBarChart financialEvolution={financialEvolution} />
               </ChartContent>
             </ChartContainer>
           </Section>
@@ -166,23 +258,35 @@ export function App() {
 
             <Row>
               <Input
-                name="search"
+                name="title"
                 placeholder="Procurar transação..."
                 variant="black"
-                width
+                style={{ width: '90%' }}
               />
-              <ButtonIcon>
+              <ButtonIcon onClick={handleSubmit(onSubmit)}>
                 <IoIosSearch fontSize="1.25rem" />
               </ButtonIcon>
             </Row>
 
-            <Transaction
-              id="1"
-              title="Mercado"
-              date="21/02/2024"
-              amount={2500}
-              category={{ title: 'Alimentação', color: '#0cc0ec' }}
-            />
+            {transactions?.length &&
+              transactions.map((transaction, index) => (
+                <Transaction
+                  key={transaction._id}
+                  id={index + 1}
+                  title={transaction.title}
+                  date={dayjs(transaction.date).format('DD/MM/YYYY')}
+                  amount={
+                    transaction.type === 'expense'
+                      ? transaction.amount * -1
+                      : transaction.amount
+                  }
+                  category={{
+                    title: transaction.category.title,
+                    color: transaction.category.color,
+                  }}
+                  variant={transaction.type}
+                />
+              ))}
           </Aside>
         </Main>
       </FormProvider>

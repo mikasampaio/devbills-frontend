@@ -2,7 +2,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { Container, Info, Content } from './styles';
 
 type TransactionProps = {
-  id: string;
+  id: number;
   title: string;
   date: string;
   amount: number;
@@ -10,7 +10,7 @@ type TransactionProps = {
     title: string;
     color: string;
   };
-  variant?: 'income' | 'expense';
+  variant: 'income' | 'expense';
 };
 
 export default function Transaction({

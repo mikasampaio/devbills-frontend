@@ -4,58 +4,11 @@ import dayjs from 'dayjs';
 import localeBr from 'dayjs/locale/pt-br';
 import { useMemo } from 'react';
 
+import { FinancialEvolution } from '../../services/transaction-request';
 import { theme } from '../../styles/theme';
 import { formatCurrency } from '../../utils/formatCurrency';
 
 dayjs.locale(localeBr);
-
-const dataApi = [
-  {
-    _id: {
-      year: 2023,
-      month: 1,
-    },
-    incomes: 644566,
-    expenses: 44554,
-    balance: 976655,
-  },
-  {
-    _id: {
-      year: 2023,
-      month: 2,
-    },
-    incomes: 4555689,
-    expenses: 57964,
-    balance: 976655,
-  },
-  {
-    _id: {
-      year: 2023,
-      month: 3,
-    },
-    incomes: 35678,
-    expenses: 345446,
-    balance: 347997,
-  },
-  {
-    _id: {
-      year: 2023,
-      month: 4,
-    },
-    incomes: 35678,
-    expenses: 345446,
-    balance: 347997,
-  },
-  {
-    _id: {
-      year: 2023,
-      month: 5,
-    },
-    incomes: 35678,
-    expenses: 345446,
-    balance: 347997,
-  },
-];
 
 type ChartProps = {
   month: string;
@@ -64,17 +17,25 @@ type ChartProps = {
   Gastos: number;
 };
 
-export function FinancesBarChart() {
-  const data = useMemo<ChartProps[]>(() => {
-    const chartData = dataApi.map((data) => ({
-      month: dayjs(`${data._id.year}-${data._id.month}-01`).format('MMM'),
-      Saldo: data.balance,
-      Receitas: data.incomes,
-      Gastos: data.expenses,
-    }));
+interface FinancesProps {
+  financialEvolution: FinancialEvolution[];
+}
 
-    return chartData;
-  }, []);
+export function FinancesBarChart({ financialEvolution }: FinancesProps) {
+  const data = useMemo<ChartProps[]>(() => {
+    if (financialEvolution.length) {
+      const chartData: ChartProps[] = financialEvolution.map((data) => ({
+        month: dayjs(`${data._id[0]}-${data._id[1]}-01`).format('MMM'),
+        Saldo: data.balance,
+        Receitas: data.incomes,
+        Gastos: data.expenses,
+      }));
+
+      return chartData;
+    }
+
+    return [];
+  }, [financialEvolution]);
 
   return (
     <ResponsiveBar

@@ -9,6 +9,10 @@ type ComponentProps = {
   padding?: boolean;
 };
 
+type CategoryBadgeProps = {
+  $color?: string;
+};
+
 export const Header = styled.header<ComponentProps>`
   display: flex;
   align-items: center;
@@ -85,4 +89,15 @@ export const Aside = styled.aside`
 export const Row = styled.div`
   display: flex;
   gap: 0.75rem;
+`;
+
+export const CategoryBadge = styled.span<CategoryBadgeProps>`
+  display: flex;
+  align-items: center;
+  color: ${(props) => props.$color};
+  border: 1px solid ${(props) => props.$color};
+  padding: 0.25rem;
+  border-radius: 0.125rem;
+  font-size: 0.725rem;
+  cursor: pointer;
 `;
